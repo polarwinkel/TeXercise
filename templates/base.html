@@ -1,0 +1,23 @@
+<!doctype html>
+<html id="html">
+    <head>
+        <title>TeXercise</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" href="{{ relroot }}_static/polar.css" />
+        <link rel="stylesheet" type="text/css" href="{{ relroot }}_static/main.css" />
+        <link rel="icon" type="image/svg+xml" href="{{ relroot }}_static/favicon.svg" sizes="any" />
+        <link rel="icon" type="image/x-icon" href="{{ relroot }}_static/favicon.ico" sizes="any" />
+    </head>
+    <body id="body">
+        <div id="page">
+            <p id="nav" class="no-print" style="width:100%; background-color:080; text-align:right;">
+                <!--<a href="{{ relroot }}">home</a> | TODO: nav-->
+            </p>
+            {% block content %}Content{% endblock %}
+        </div>
+        <p id="copyright" class="no-print" style="width:100%; background-color:080; text-align:right; font-size:0.6rem;">
+            TeXercise (c) 2022 by Dirk Winkel, licensed under GPLv3 or newer - <a href="https://github.com/polarwinkel/TeXercise" target="_blank">Fork me on GitHub</a>
+        </p>
+    </body>
+</html>

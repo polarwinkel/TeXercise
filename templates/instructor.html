@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="height:0; width:0; margin-top:-5.8rem; margin-bottom:2rem;">
+    <p style="font-size:3.8rem; color:rgba(127,127,127,0.15)">TeXerTest Instructor</p>
+</div>
+<nav id="pagenav">
+    <a href="{{ relroot }}_logout">Logout</a>
+</nav>
+<div id="content">
+    <h1>Logged in as: {{ authuser }}</h1>
+    <ul>
+        <li><a href="{{relroot}}_createSheet/">new exercise</a></li>
+    </ul>
+    <h2>Sheet List</h2>
+    <div id="sheetList">
+    </div>
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+<script>
+    var relroot = '{{ relroot }}';
+    var sheetList = JSON.parse('{{ sheetList|tojson }}');
+    var list = '<table>';
+    list += '<tr><th>Sheet Name</th><th></th><th></th><th>Timestamp</th></tr>'
+    for (var i=0; i<sheetList.length; i++) {
+        list += '<tr>';
+        list += '<td>'+sheetList[i].name+'</td>';
+        list += '<td><a href="{{ relroot }}_editSheet/'+sheetList[i].name+'">edit</a></td>';
+        list += '<td><a href="{{ relroot }}_results/'+sheetList[i].name+'">results</a></td>';
+        list += '<td>'+sheetList[i].timestamp+'</td>';
+        list += '</tr>';
+    }
+    list += '</table>';
+    document.getElementById('sheetList').innerHTML = list;
+</script>
+
+{% endblock %}

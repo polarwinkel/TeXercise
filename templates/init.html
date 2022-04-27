@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="height:0; width:0; margin-top:-5.8rem; margin-bottom:2rem;">
+    <p style="font-size:3.8rem; color:rgba(127,127,127,0.15)">TeXerTest Instructor</p>
+</div>
+<nav id="pagenav">
+</nav>
+<div id="content">
+    <h1>TeXercise Install-Page</h1>
+    <p>Please type in you desired username and password for your admin-user.</p>
+    <p>So far TeXercise is just for one instructor. If there should be an update allowing several indepandent instructors the user set up here will be the admin to manage all instructor-accounts.</p>
+    <form action='_init' method='POST'>
+        <input type='text' name='username' id='username' placeholder='username'></input>
+        <input type='password' name='password' id='password' placeholder='password'></input>
+        <input type='submit' name='submit'></input>
+    </form>
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+
+{% endblock %}

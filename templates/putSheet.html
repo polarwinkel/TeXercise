@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="height:0; width:0; margin-top:-5.8rem; margin-bottom:2rem;">
+    <p style="font-size:3.8rem; color:rgba(127,127,127,0.15)">TeXercise</p>
+</div>
+<nav id="pagenav">
+</nav>
+<div id="sheet">
+    <h1>Create or edit Sheet</h1>
+    <input type="hidden" id="sid" name="sid" class="formdata" />
+    <input type="text" id="name" name="name" class="formdata" />
+    <label for="name">name:</label><br />
+    <input type="hidden" id="forceLogin" name="forceLogin" class="formdata" falue="true" />
+    <!--<label for="forceLogin">Force User-login:</label><br />-->
+    <input type="checkbox" id="allowEdit" name="allowEdit" class="formdata" />
+    <label for="name">allowEdit:</label><br />
+    <label>content:</label><br />
+    <textarea type="text" id="content" name="content" class="formdata">{{ content }}</textarea>
+    <input type="submit" value="Save" onclick="save()">
+</div>
+<hr />
+<h3>Field-types</h3>
+<p>Enter fields in tro square brackets <code>[[field]]</code> with <code>,</code>-separated attributes.<br />
+The first attribute is the type, the second is the name, then the options that depends on the type (see below).</p>
+<ul>
+    <li><code>b</code>: boolean, option is the answer-value <code>true</code> or <code>false</code>.<br />
+    Example: <code>[[b,name,true]]</code></li>
+    <li><code>n</code>: random number, mandatory options are min, max, optional step (default: 1).<br />
+    Example: <code>[[n,x,2,10,2]]</code><br />
+    <i>Hint:</i> numbers <b>must not be renamed</b> after first user edit!</li>
+    <li><code>s</code>: calculated solution, option is the solving equation, i.e.<code>x+y</code>.<br />
+    Example: <code>[[s,solution,x+y]]</code></li>
+    <li><code>t</code>: text, option is the answer-value. It will be checked case-insensitive, so <code>right answer=Right Answer</code>!<br />
+    Example: <code>[[t,term,right answer]]</code></li>
+</ul>
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+<script>
+    var relroot = '{{ relroot }}';
+    var sid = '{{ sid }}';
+    var name = '{{ name }}';
+    var allowEdit = '{{ allowEdit }}';
+    var forceLogin = '{{ forceLogin }}';
+    async function save() {
+        // send form to server
+        var formJson = getFormJson();
+        var putUrl = relroot+'_putSheet/'+formJson.name;
+        try{
+            const response = await fetch(putUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formJson)
+            });
+            response.text().then(function (text) {
+                pa.message(text);
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+    if (sheet.id !== '') {
+        document.getElementById('sid').value = sid;
+        document.getElementById('name').value = name;
+        if (allowEdit == 'on') {document.getElementById('allowEdit').checked = true};
+    }
+</script>
+
+{% endblock %}

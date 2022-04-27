@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="height:0; width:0; margin-top:-5.8rem; margin-bottom:2rem;">
+    <p style="font-size:3.8rem; color:rgba(127,127,127,0.15)">TeXercise</p>
+</div>
+<nav id="pagenav">
+</nav>
+<div id="sheet">
+    <h1>Solve Sheet</h1>
+    <p>Name: <span id="_name">{{ name }}</span></p>
+    <div id="sheetcontent">
+    </div>
+    <input type="submit" value="Submit" onclick="askSubmit()">
+</div>
+
+<script src="{{ relroot }}_static/getFormJson.js"></script>
+<script src="{{ relroot }}_static/polalert.js"></script>
+<script>
+    var relroot = '{{ relroot }}';
+    var sheetn = '{{ sheetn }}';
+    var allowEdit = '{{ allowEdit }}';
+    function askSubmit() {
+        if (allowEdit == 'on') {
+            submit();
+        } else {
+            pa.boolean('Really? You allowed to submit this just one time!')
+        }
+    }
+    function paOk(str) {
+        submit();
+    }
+    function paNo(str) {
+        alert('Ok, keep working!');
+    }
+    async function submit() {
+        // send form to server
+        var formJson = getFormJson();
+        var putUrl = relroot+'_postEdit/'+eid;
+        try{
+            const response = await fetch(putUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formJson)
+            });
+            response.text().then(function (text) {
+                check();
+                pa.message(text);
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+    async function setName(name) {
+        // set the username and get the current edit
+        var data = JSON.stringify({'sheetn': sheetn, 'name': name});
+        var putUrl = relroot+'_putEditName/';
+        try{
+            const response = await fetch(putUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            });
+            response.text().then(function (text) {
+                var result = JSON.parse(text);
+                name = name;
+                eid = result.eid;
+                document.getElementById('_name').innerHTML = name;
+                document.getElementById('sheetcontent').innerHTML = result.sheetcontent;
+                try {
+                    var content = JSON.parse(result.content)
+                    for (var key in content) {
+                        var elem = document.getElementById(key);
+                        if (elem.type== 'text') {
+                            elem.value = content[key];
+                        } else if (elem.type=='checkbox') {
+                            if (content[key]=='on') elem.checked=true;
+                        }
+                    }
+                } catch { }
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+    function paInputReceive(inputtext) {
+        if (inputtext != false) {
+            setName(inputtext);
+        } else {
+            alert('No name was set. That is not permitted for this sheet!');
+        }
+    }
+    async function check() {
+        // get revision and show right/wrong
+        var request = {'sheetn': sheetn, 'eid': eid}
+        var putUrl = relroot+'_getRevision/';
+        try{
+            const response = await fetch(putUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            });
+            response.text().then(function (text) {
+                rev = JSON.parse(text);
+                for (var key in rev) {
+                    elem = document.getElementById(key);
+                    if (rev[key]) {
+                        elem.style.color = 'green';
+                        elem.style.accentColor = 'green';
+                    } else if (!(rev[key])) {
+                        elem.style.color = 'red';
+                        elem.style.accentColor = 'red';
+                    }
+                }
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+    name = document.getElementById('_name').innerHTML;
+    if (name === '') {
+        pa.input('Name:');
+    } else {
+        setName(name);
+    }
+</script>
+
+{% endblock %}
