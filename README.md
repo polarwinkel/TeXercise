@@ -22,8 +22,10 @@ All dependencies can be installes on a debian-besed system with `apt install`
 
 - `python3`
 - `python-flask`
+- `python3-jinja2`
+- `python3-yaml`
+- `python3-markdown`
 - `python3-flask-login`
-- (more? not sure, TODO: need to check)
 
 ## TODO
 
