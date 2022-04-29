@@ -66,7 +66,7 @@ def index():
     #if flask_login.current_user.is_anonymous:
     #    return render_template('login.html', relroot='./')
     if settings.get('admin') == '':
-        return redirect(url_for('init'))
+        return redirect('_init')
     return render_template('index.html', relroot='./')
 
 @app.route('/_init', methods=['GET', 'POST'])
@@ -79,7 +79,7 @@ def init():
         if username != '' and password != '':
             settings.set('admin', username)
             settings.set('password', password)
-            return redirect(url_for('login'))
+            return redirect('_login')
         return 'ERROR: Username and/or password was not set!'
     else:
         return 'TeXercise is already initialized!'
@@ -89,20 +89,20 @@ def login():
     if request.method == 'GET':
         if flask_login.current_user.is_anonymous:
             return render_template('login.html', relroot='./')
-        return redirect(url_for('instructor'))
+        return redirect('_instructor')
     username = request.form['username']
     if username == settings.get('admin'):
         if settings.checkPw(request.form['password']):
             user = User()
             user.id = username
             flask_login.login_user(user)
-            return redirect(url_for('instructor'))
+            return redirect('_instructor')
     return 'Bad login'
 
 @app.route('/_logout')
 def logout():
     flask_login.logout_user()
-    return redirect(url_for('index'))
+    return redirect('./')
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
