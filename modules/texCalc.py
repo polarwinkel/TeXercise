@@ -25,9 +25,10 @@ import math
 def texCalc(formula, values=''):
     ''' claculate the formula recursively with the given values '''
     # brackets:
-    if formula.strip().startswith('('):
+    if formula.find('(')>=0:
+        part0 = formula[0:formula.find('(')]
+        formula = formula[formula.find('(')+1:]
         n=1
-        formula=formula[1:]
         part1 = ''
         while len(formula)>0:
             if formula.startswith('('):
@@ -37,9 +38,22 @@ def texCalc(formula, values=''):
             if n==0:
                 formula=formula[1:]
                 break
-            part1=part1+formula[0]
-            formula=formula[1:]
-        formula = str(texCalc(part1, values))+formula
+            else:
+                part1=part1+formula[0]
+                formula=formula[1:]
+        formula = part0+str(texCalc(part1, values))+formula
+    # sqrt:
+    if formula.find('\sqrt')>=0:
+        part0 = formula[0:formula.find('\sqrt')]
+        formula = formula[formula.find('\sqrt')+5:]
+        ops = ['*','/','+','-']
+        num = ''
+        for i in range(len(formula)):
+            if formula[i] in ops:
+                formula = formula[1:]
+                break
+            num = num+formula[i]
+        return texCalc(part0+str(math.sqrt(float(num)))+formula, values)
     # arithmetic operations:
     if formula.partition('*')[2] != '':
         a = formula.partition('*')[0]
@@ -58,9 +72,6 @@ def texCalc(formula, values=''):
         b = formula.partition('-')[2]
         return texCalc(a, values)-texCalc(b, values)
     else:
-        # sqrt:
-        if formula.strip().startswith('\sqrt'):
-            return math.sqrt(float(texCalc(formula[5:], values)))
         # there are no more arithmetic operators left
         # replace values
         if formula in values:

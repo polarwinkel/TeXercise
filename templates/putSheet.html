@@ -21,8 +21,8 @@
 </div>
 <hr />
 <h3>Field-types</h3>
-<p>Enter fields in tro square brackets <code>[[field]]</code> with <code>,</code>-separated attributes.<br />
-The first attribute is the type, the second is the name, then the options that depends on the type (see below).</p>
+<p>Enter fields in two square brackets <code>[[field]]</code> with <code>,</code>-separated attributes.<br />
+The first attribute is the type, the second is the name, followed by the options (depending on type, see below).</p>
 <ul>
     <li><code>b</code>: boolean, option is the answer-value <code>true</code> or <code>false</code>.<br />
     Example: <code>[[b,name,true]]</code></li>
@@ -30,8 +30,8 @@ The first attribute is the type, the second is the name, then the options that d
     Example: <code>[[n,x,2,10,2]]</code><br />
     <i>Hint:</i> numbers <b>must not be renamed</b> after first user edit!</li>
     <li><code>s</code>: calculated solution, option is the solving equation, i.e.<code>x+y</code>.<br />
-    Example: <code>[[s,solution,x+y]]</code></li>
-    <li><code>t</code>: text, option is the answer-value. It will be checked case-insensitive, so <code>right answer=Right Answer</code>!<br />
+    Example: <code>[[s,solution,\sqrt(x*x+y*y)]]</code></li>
+    <li><code>t</code>: text, option is the answer-value. It will be checked case-insensitive, so <code>right answer=Right Answer</code>.<br />
     Example: <code>[[t,term,right answer]]</code></li>
 </ul>
 <script src="{{ relroot }}_static/getFormJson.js"></script>
