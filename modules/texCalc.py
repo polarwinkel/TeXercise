@@ -46,14 +46,15 @@ def texCalc(formula, values=''):
     if formula.find('\sqrt')>=0:
         part0 = formula[0:formula.find('\sqrt')]
         formula = formula[formula.find('\sqrt')+5:]
-        ops = ['*','/','+','-']
-        num = ''
+        digits = '0123456789.'
+        part1 = ''
+        part2 = ''
         for i in range(len(formula)):
-            if formula[i] in ops:
-                formula = formula[1:]
+            if formula[i] not in digits:
+                part2 = formula[i:]
                 break
-            num = num+formula[i]
-        return texCalc(part0+str(math.sqrt(float(num)))+formula, values)
+            part1 = part1+formula[i]
+        formula = part0+str(math.sqrt(texCalc(part1)))+part2
     # arithmetic operations:
     if formula.partition('*')[2] != '':
         a = formula.partition('*')[0]
