@@ -162,7 +162,10 @@ def sheet(sheetn):
     '''show sheet-page'''
     db = dbio.TtDb(dbfile)
     sheet = db.getSheet(sheetn)
-    return render_template('sheet.html', relroot='./', sheetn=sheet['name'], allowEdit=sheet['allowEdit'], name='')
+    if sheet is not None:
+        return render_template('sheet.html', relroot='./', sheetn=sheet['name'], allowEdit=sheet['allowEdit'], name='')
+    else:
+        return 'Sheet not found!'
 
 @app.route('/<path:path>', methods=['GET'])
 def sheetUser(path):

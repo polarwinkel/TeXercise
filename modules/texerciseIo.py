@@ -80,7 +80,8 @@ def revise(sheet, edit):
                 content[name] = int(content[name])
             except ValueError:
                 content[name] = float(str(content[name]).replace(',', '.'))
-            if (tasks[name]['result']*0.95 <= content[name]) and (tasks[name]['result']*1.05 >= content[name]):
+            res = float(tasks[name]['result'])
+            if (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
                 result[name] = True
             else:
                 result[name] = False

@@ -24,9 +24,6 @@ import math
 
 def texCalc(formula, values=''):
     ''' claculate the formula recursively with the given values '''
-    # sqrt:
-    if formula.strip().startswith('\sqrt'):
-        return str(math.sqrt(float(texCalc(formula[5:], values))))
     # brackets:
     if formula.strip().startswith('('):
         n=1
@@ -61,6 +58,9 @@ def texCalc(formula, values=''):
         b = formula.partition('-')[2]
         return texCalc(a, values)-texCalc(b, values)
     else:
+        # sqrt:
+        if formula.strip().startswith('\sqrt'):
+            return math.sqrt(float(texCalc(formula[5:], values)))
         # there are no more arithmetic operators left
         # replace values
         if formula in values:
