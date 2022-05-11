@@ -57,7 +57,7 @@ def revise(sheet, edit):
             pass
         elif task[0] == 's':
             tasks[task[1]] = {'type': 's'}
-            tasks[task[1]]['result'] = texCalc.texCalc(task[2], values)
+            tasks[task[1]]['result'] = texCalc.calc(task[2], values)
         elif task[0] == 't':
             tasks[task[1]] = {'type': 't'}
             tasks[task[1]]['result'] = task[2].lower()
@@ -75,16 +75,21 @@ def revise(sheet, edit):
                 if content[name] in ['false', 'off', 'False', False, 0, '0']:
                     result[name] = True
         elif tasks[name]['type'] == 's':
-            # TODO: allow range (default: 10%)
             try:
                 content[name] = int(content[name])
             except ValueError:
-                content[name] = float(str(content[name]).replace(',', '.'))
-            res = float(tasks[name]['result'])
-            if (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
-                result[name] = True
-            else:
-                result[name] = False
+                try:
+                    content[name] = float(str(content[name]).replace(',', '.'))
+                except:
+                    content[name] = None
+            try:
+                res = float(tasks[name]['result'])
+                if (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
+                    result[name] = True
+                else:
+                    result[name] = False
+            except TypeError:
+                result[name] = None
         elif tasks[name]['type'] == 't':
             if tasks[name]['result'] == content[name].lower():
                 result[name] = True
