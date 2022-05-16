@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 '''
 calculate a mathematical formula with a given value-dict
+returns int or float
 
 This might become a TeX-Calculation-library, but maybe handcalcs will
 do all jobs I need, so this might also stay as basic as it is.
@@ -38,20 +39,21 @@ def _rekcalc(formula, values=''):
     if formula.find('(')>=0:
         part0 = formula[0:formula.find('(')]
         formula = formula[formula.find('(')+1:]
-        n=1
+        depth=1
         part1 = ''
         while len(formula)>0:
             if formula.startswith('('):
-                n=n+1
+                depth=depth+1
             elif formula.startswith(')'):
-                n=n-1
-            if n==0:
+                depth=depth-1
+            if depth==0:
                 formula=formula[1:]
                 break
             else:
                 part1=part1+formula[0]
                 formula=formula[1:]
         formula = part0+str(_rekcalc(part1, values))+formula
+        formula = str(_rekcalc(formula, values)) #resolve remaining brackets
     # sqrt:
     if formula.find('\sqrt')>=0:
         part0 = formula[0:formula.find('\sqrt')]

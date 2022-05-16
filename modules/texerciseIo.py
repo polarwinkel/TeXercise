@@ -58,6 +58,7 @@ def revise(sheet, edit):
         elif task[0] == 's':
             tasks[task[1]] = {'type': 's'}
             tasks[task[1]]['result'] = texCalc.calc(task[2], values)
+            values[task[1]] = tasks[task[1]]['result']
         elif task[0] == 't':
             tasks[task[1]] = {'type': 't'}
             tasks[task[1]]['result'] = task[2].lower()

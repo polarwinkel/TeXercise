@@ -9,7 +9,7 @@ import sqlite3
 from flask import Flask, render_template, request, send_from_directory, make_response, jsonify
 from flask import url_for, redirect
 import flask_login
-from werkzeug.middleware.proxy_fix import ProxyFix
+#from werkzeug.middleware.proxy_fix import ProxyFix
 import json
 from jinja2 import Template
 from multiprocessing import Process
@@ -29,7 +29,7 @@ extensions = settings.get('extensions')
 # WebServer stuff:
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
+#app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
 
 # login-stuff
 
