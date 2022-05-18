@@ -13,9 +13,26 @@
     </div>
     <input type="submit" value="Submit" onclick="askSubmit()">
 </div>
+<hr />
+<input type="submit" value="Show QR-Code" onclick="showQr()" id="showQr">
 
 <script src="{{ relroot }}_static/getFormJson.js"></script>
 <script src="{{ relroot }}_static/polalert.js"></script>
+<script>
+function showQr() {
+    let qrcodeScript = document.createElement("script");
+    qrcodeScript.setAttribute("src", "{{ relroot }}_static/qrcode.min.js");
+    document.body.appendChild(qrcodeScript);
+    qrcodeScript.addEventListener("load", qrcodeScriptLoaded, false);
+}
+function qrcodeScriptLoaded() {
+    var
+    svgNode = QRCode({msg:window.location.href, dim:800,
+            pad:6, mtx:7, ecl:"H", ecb:0, pal:["#000", "#eee"], vrb:1});
+    document.getElementById('showQr').style.display = 'none';
+    document.body.appendChild(svgNode);
+}
+</script>
 <script>
     var relroot = '{{ relroot }}';
     var sheetn = '{{ sheetn }}';
