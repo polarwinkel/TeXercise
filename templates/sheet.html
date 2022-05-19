@@ -41,7 +41,7 @@ function qrcodeScriptLoaded() {
         if (allowEdit == 'on') {
             submit();
         } else {
-            pa.boolean('Really? You allowed to submit this just one time!')
+            pa.boolean('Really? This is final!')
         }
     }
     function paOk(str) {
@@ -63,7 +63,7 @@ function qrcodeScriptLoaded() {
                 body: JSON.stringify(formJson)
             });
             response.text().then(function (text) {
-                check();
+                checkSubmitted();
                 pa.message(text);
             });
         } catch(err) {
@@ -98,6 +98,7 @@ function qrcodeScriptLoaded() {
                             if (content[key]=='on') elem.checked=true;
                         }
                     }
+                    checkSubmitted();
                 } catch { }
             });
         } catch(err) {
@@ -111,7 +112,7 @@ function qrcodeScriptLoaded() {
             alert('No name was set. That is not permitted for this sheet!');
         }
     }
-    async function check() {
+    async function checkSubmitted() {
         // get revision and show right/wrong
         var request = {'sheetn': sheetn, 'eid': eid}
         var putUrl = relroot+'_getRevision/';
