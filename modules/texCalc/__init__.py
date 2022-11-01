@@ -3,7 +3,7 @@
 calculate a mathematical formula with a given value-dict
 returns int or float
 
-version 0.2
+version 0.3
 
 This might become a TeX-Calculation-library, but maybe handcalcs will
 do all jobs I need, so this might also stay as basic as it is.
