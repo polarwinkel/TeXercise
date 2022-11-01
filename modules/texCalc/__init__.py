@@ -27,6 +27,9 @@ TODO:
 import math
 
 def calc(formula, values=''):
+    # replace static stuff:
+    formula = formula.replace(' ', '')
+    formula = formula.replace('\pi', '3.141592654')
     #try:
     return _rekcalc(formula, values)
     #except ValueError as e:
@@ -70,6 +73,27 @@ def _rekcalc(formula, values=''):
                 break
             part1 = part1+formula[i]
         formula = part0+str(math.sqrt(_rekcalc(part1)))+part2
+    # power:
+    if formula.find(r'^')>=0:
+        #TODO
+        #pass
+        first = formula[0:formula.find(r'^')]
+        part0 = ''
+        base = ''
+        for i in reversed(range(len(first))):
+            if first[i] not in digits:
+                part0 = first[:i+1]
+                break
+            base = first[i]+base
+        last = formula[formula.find(r'^')+1:]
+        exponent = ''
+        part2 = ''
+        for i in range(len(last)):
+            if last[i] not in digits:
+                part2 = last[i:]
+                break
+            exponent = exponent+last[i]
+        formula = part0+str(math.pow(_rekcalc(base),_rekcalc(exponent)))+part2
     # trigonometry:
     if formula.find(r'\sin')>=0:
         part0 = formula[0:formula.find(r'\sin')]
@@ -138,24 +162,23 @@ def _rekcalc(formula, values=''):
             part1 = part1+formula[i]
         formula = part0+str(math.atan(_rekcalc(part1)))+part2
     # arithmetic operations:
-    if formula.partition('*')[2] != '':
-        a = formula.partition('*')[0]
-        b = formula.partition('*')[2]
-        return _rekcalc(a, values)*_rekcalc(b, values)
-    elif formula.partition('/')[2] != '':
-        # TODO: this gives wrong results for '1/1/10' because the last part will be calculated first!!!
-        a = formula.partition('/')[0]
-        b = formula.partition('/')[2]
-        return _rekcalc(a, values)/_rekcalc(b, values)
-    elif formula.partition('+')[2] != '':
-        a = formula.partition('+')[0]
-        b = formula.partition('+')[2]
+    # since it's recursive start with addition/subtraction and reverse
+    if formula.rpartition('+')[0] != '':
+        a = formula.rpartition('+')[0]
+        b = formula.rpartition('+')[2]
         return _rekcalc(a, values)+_rekcalc(b, values)
-    elif formula.partition('-')[2] != '':
-        # TODO: this causes errors with negative numbers!!!
-        a = formula.partition('-')[0]
-        b = formula.partition('-')[2]
+    elif formula.rpartition('-')[0] != '':
+        a = formula.rpartition('-')[0]
+        b = formula.rpartition('-')[2]
         return _rekcalc(a, values)-_rekcalc(b, values)
+    elif formula.rpartition('*')[0] != '':
+        a = formula.rpartition('*')[0]
+        b = formula.rpartition('*')[2]
+        return _rekcalc(a, values)*_rekcalc(b, values)
+    elif formula.rpartition('/')[0] != '':
+        a = formula.rpartition('/')[0]
+        b = formula.rpartition('/')[2]
+        return _rekcalc(a, values)/_rekcalc(b, values)
     else:
         # there are no more arithmetic operators left
         # replace values:
