@@ -57,7 +57,10 @@ def revise(sheet, edit):
             pass
         elif task[0] == 's':
             tasks[task[1]] = {'type': 's'}
-            tasks[task[1]]['result'] = texCalc.calc(task[2], values)
+            try:
+                tasks[task[1]]['result'] = texCalc.calc(task[2], values)
+            except:
+                tasks[task[1]]['result'] = None
             values[task[1]] = tasks[task[1]]['result']
         elif task[0] == 't':
             tasks[task[1]] = {'type': 't'}
@@ -85,7 +88,10 @@ def revise(sheet, edit):
                     content[name] = None
             try:
                 res = float(tasks[name]['result'])
-                if (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
+                if res == None:
+                    result[name] = None
+                elif (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
+                    # TODO: option for tolerance-percentage
                     result[name] = True
                 else:
                     result[name] = False

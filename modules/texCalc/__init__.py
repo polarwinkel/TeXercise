@@ -3,7 +3,7 @@
 calculate a mathematical formula with a given value-dict
 returns int or float
 
-version 0.3
+version 0.4
 
 This might become a TeX-Calculation-library, but maybe handcalcs will
 do all jobs I need, so this might also stay as basic as it is.
@@ -11,17 +11,23 @@ do all jobs I need, so this might also stay as basic as it is.
 All it can do for now is:
 - apply +, -, *, / operators
 - multiplication and division first, then addition and subtraction
-- trigonometric functions
+- power ^
+- brackets () (only round ones yet)
+- trigonometric functions \sin or \arctan
+- expoential numbers: 1e+12
+- \log and e^
+- and more by now, see code below!
 
-make sure you always use *, xy != x*y , in that case xy would be a value!
+make sure you always use '*', because 'xy' != 'x*y', in that case xy would be a value!
 
 TODO:
 - ~~implement brackets ()~~ done
 - implement \frac{}{}
-- implement \cdot
-- ~~implement \sqrt{}~~ (works now with round brackets)
-- implement ^
-- implement default values for pi and e that the user can override
+- ~~implement \cdot~~ done
+- implement \sqrt{} (works now with round brackets already)
+- ~~implement ^~~ done
+- ~~implement default value for pi~~ done
+- ~~implement e^() and \log()~~ done
 '''
 
 import math
@@ -29,9 +35,14 @@ import math
 def calc(formula, values=''):
     # replace static stuff:
     formula = formula.replace(' ', '')
+    formula = formula.replace('\left', '')
+    formula = formula.replace('\right', '')
     formula = formula.replace('\pi', '3.141592654')
+    formula = formula.replace('\cdot', '*')
     #try:
     return _rekcalc(formula, values)
+    #except
+    #    return None
     #except ValueError as e:
     #    #raise ValueError('syntax not valid for texCalc')
     #    print(e)
@@ -41,7 +52,8 @@ def calc(formula, values=''):
 
 def _rekcalc(formula, values=''):
     ''' claculate the formula recursively with the given values '''
-    digits = '0123456789.'
+    print(formula)
+    digits = '0123456789.-'
     # brackets:
     if formula.find('(')>=0:
         part0 = formula[0:formula.find('(')]
@@ -75,9 +87,10 @@ def _rekcalc(formula, values=''):
         formula = part0+str(math.sqrt(_rekcalc(part1)))+part2
     # power:
     if formula.find(r'^')>=0:
-        #TODO
-        #pass
         first = formula[0:formula.find(r'^')]
+        if first.endswith('e'):
+            # handle e^
+            first = first[:-1]+str(math.exp(1))
         part0 = ''
         base = ''
         for i in reversed(range(len(first))):
@@ -94,6 +107,18 @@ def _rekcalc(formula, values=''):
                 break
             exponent = exponent+last[i]
         formula = part0+str(math.pow(_rekcalc(base),_rekcalc(exponent)))+part2
+    # log:
+    if formula.find(r'\log')>=0:
+        part0 = formula[0:formula.find(r'\log')]
+        formula = formula[formula.find(r'\log')+4:]
+        part1 = ''
+        part2 = ''
+        for i in range(len(formula)):
+            if formula[i] not in digits:
+                part2 = formula[i:]
+                break
+            part1 = part1+formula[i]
+        formula = part0+str(math.log(_rekcalc(part1)))+part2
     # trigonometry:
     if formula.find(r'\sin')>=0:
         part0 = formula[0:formula.find(r'\sin')]
@@ -163,11 +188,12 @@ def _rekcalc(formula, values=''):
         formula = part0+str(math.atan(_rekcalc(part1)))+part2
     # arithmetic operations:
     # since it's recursive start with addition/subtraction and reverse
-    if formula.rpartition('+')[0] != '':
+    if (formula.rpartition('+')[0] != '') and (formula.rpartition('+')[0][-1:] != 'e'): # e like '2e+12'
         a = formula.rpartition('+')[0]
         b = formula.rpartition('+')[2]
         return _rekcalc(a, values)+_rekcalc(b, values)
-    elif formula.rpartition('-')[0] != '':
+    elif (formula.rpartition('-')[0] != '') and (formula.rpartition('-')[0][-1:] not in ['+','-','*','/','e']):
+        # (if '-' follows an operator it is the algebraic sign)
         a = formula.rpartition('-')[0]
         b = formula.rpartition('-')[2]
         return _rekcalc(a, values)-_rekcalc(b, values)
