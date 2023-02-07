@@ -30,8 +30,10 @@ The first attribute is the type, the second is the name, followed by the options
 <ul>
     <li><code>b</code>: boolean, option is the answer-value <code>true</code> or <code>false</code>.<br />
     Example: <code>[[b,name,true]]</code></li>
-    <li><code>n</code>: random number, mandatory options are min, max, optional step (default: 1).<br />
-    Example: <code>[[n,x,2,10,2]]</code><br />
+    <li><code>f</code>: random float number with 5 significant figures, mandatory options are min, max.<br />
+    Example: <code>[[f,x,2.7e-2,3.1e-2]]</code><br />
+    <li><code>n</code>: random integer number, mandatory options are min, max, optional step (default: 1).<br />
+    Example: <code>[[n,y,2,10,2]]</code><br />
     <i>Hint:</i> numbers <b>must not be renamed</b> after first user edit!</li>
     <li><code>s</code>: calculated solution, option is the solving equation, i.e.<code>x+y</code>.<br />
     Example: <code>[[s,solution,\sqrt(x*x+y*y)]]</code></li><br />
