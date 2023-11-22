@@ -1,44 +1,41 @@
 #!/usr/bin/python3
 '''
-calculate a mathematical formula with a given value-dict
-returns int or float
+LaTeXcalc is a LaTeX-Calculation-library for python3.
 
-version 0.4
+Licenced under GPLv3 or newer
+(c) 2022-2023 by Dirk Winkel
+version 0.8.0
 
-This might become a TeX-Calculation-library, but maybe handcalcs will
-do all jobs I need, so this might also stay as basic as it is.
+This calculates a mathematical formula written as a LaTeX-string.
+It will use with a given value-dict for variables in the formula.
+The return-value is int or float.
 
-All it can do for now is:
+Supported features:
 - apply +, -, *, / operators
 - multiplication and division first, then addition and subtraction
 - power ^
-- brackets () (only round ones yet)
+- brackets (), [] and {} (also with \left(..\right))
+- squareroot \sqrt
 - trigonometric functions \sin or \arctan
-- expoential numbers: 1e+12
+- exponential numbers: 1e+12
 - \log and e^
-- and more by now, see code below!
+- \pi or pi and e as default-values math.pi and math.e
+- \frac{}{} (works as '\frac 1 2' as well)
 
-make sure you always use '*', because 'xy' != 'x*y', in that case xy would be a value!
+make sure you always use '*' (or '\cdot'), because 'xy' != 'x*y', in that case xy would be a value!
 
-TODO:
-- ~~implement brackets ()~~ done
-- implement \frac{}{}
-- ~~implement \cdot~~ done
-- implement \sqrt{} (works now with round brackets already)
-- ~~implement ^~~ done
-- ~~implement default value for pi~~ done
-- ~~implement e^() and \log()~~ done
+All testet cases work, but there might still be wrong calculations in 
+special cases, so test it for your needs!
 '''
 
 import math
 
-def calc(formula, values=''):
+def calc(formula, values={}):
     # replace static stuff:
-    formula = formula.replace(' ', '')
     formula = formula.replace('\left', '')
     formula = formula.replace('\right', '')
-    formula = formula.replace('\pi', '3.141592654')
     formula = formula.replace('\cdot', '*')
+    formula = formula.strip()
     #try:
     return _rekcalc(formula, values)
     #except
@@ -50,29 +47,85 @@ def calc(formula, values=''):
     #    print(values)
     #    return None
 
-def _rekcalc(formula, values=''):
+def _rekcalc(formula, values={}):
     ''' claculate the formula recursively with the given values '''
-    print(formula)
-    digits = '0123456789.-'
-    # brackets:
-    if formula.find('(')>=0:
-        part0 = formula[0:formula.find('(')]
-        formula = formula[formula.find('(')+1:]
-        depth=1
-        part1 = ''
-        while len(formula)>0:
-            if formula.startswith('('):
-                depth=depth+1
-            elif formula.startswith(')'):
-                depth=depth-1
-            if depth==0:
-                formula=formula[1:]
-                break
+    digits = '0123456789.'
+    # \frac: (replace first because {}-braces are special here)
+    if formula.find(r'\frac')>=0:
+        part0 = formula[0:formula.find(r'\frac')]
+        # fix the weired fact, that 2 1/2=2+1/2 while a b/c=a*b/c:
+        part0 = part0.replace(' ', '')
+        if part0[-1:].isnumeric():
+            part0 = part0+'+'
+        #elif part0[-1:] and part0[-1:] not in ['+','-','*','/']:
+        #    part0 = part0+'*'
+        formula = formula[formula.find(r'\frac')+5:]
+        # abbreviated form with whitespace:
+        if formula.startswith(' '):
+            formula = formula.split(' ',3)
+            numerator = formula[1]
+            denominator = formula[2]
+            if len(formula)>=4:
+                formula = '*'+formula[3]
             else:
-                part1=part1+formula[0]
-                formula=formula[1:]
-        formula = part0+str(_rekcalc(part1, values))+formula
-        formula = str(_rekcalc(formula, values)) #resolve remaining brackets
+                formula = ''
+        # normal form: \frac{}{}:
+        elif formula.startswith('{'):
+            depth=1
+            numerator = ''
+            formula=formula[1:]
+            while len(formula)>0:
+                if formula.startswith('{'):
+                    depth=depth+1
+                elif formula.startswith('}'):
+                    depth=depth-1
+                if depth==0:
+                    formula=formula[1:]
+                    break
+                else:
+                    numerator=numerator+formula[0]
+                    formula=formula[1:]
+            depth=1
+            formula=formula[1:]
+            denominator = ''
+            while len(formula)>0:
+                if formula.startswith('{'):
+                    depth=depth+1
+                elif formula.startswith('}'):
+                    depth=depth-1
+                if depth==0:
+                    formula=formula[1:]
+                    break
+                else:
+                    denominator=denominator+formula[0]
+                    formula=formula[1:]
+        return _rekcalc(part0+'('+numerator+')/('+denominator+')'+formula, values)
+    formula = formula.replace(' ', '') # might have been {}-replacement in \frac before
+    # brackets:
+    brackets = [['(',')'],['[',']'],['{','}'],['\{','\}']]
+    for bra in brackets:
+        # preserve value-indices
+        if bra[0]=='{' and formula.find(bra[0])>0:
+            if formula[formula.find(bra[0])-1] == '_':
+                continue
+        if formula.find(bra[0])>=0:
+            part0 = formula[0:formula.find(bra[0])]
+            formula = formula[formula.find(bra[0])+1:]
+            depth=1
+            part1 = ''
+            while len(formula)>0:
+                if formula.startswith(bra[0]):
+                    depth=depth+1
+                elif formula.startswith(bra[1]):
+                    depth=depth-1
+                if depth==0:
+                    formula=formula[1:]
+                    break
+                else:
+                    part1=part1+formula[0]
+                    formula=formula[1:]
+            formula = part0+str(_rekcalc(part1, values))+formula
+            formula = str(_rekcalc(formula, values)) #resolve remaining brackets
     # sqrt:
     if formula.find(r'\sqrt')>=0:
         part0 = formula[0:formula.find(r'\sqrt')]
@@ -80,33 +133,34 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if formula[i] not in digits+'-':
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
         formula = part0+str(math.sqrt(_rekcalc(part1)))+part2
+        formula = str(_rekcalc(formula, values)) # resolve remaining
     # power:
     if formula.find(r'^')>=0:
         first = formula[0:formula.find(r'^')]
-        if first.endswith('e'):
-            # handle e^
-            first = first[:-1]+str(math.exp(1))
         part0 = ''
         base = ''
         for i in reversed(range(len(first))):
-            if first[i] not in digits:
+            if (first[i] not in digits+'-') and (not first[i].isalpha()):
                 part0 = first[:i+1]
                 break
             base = first[i]+base
         last = formula[formula.find(r'^')+1:]
-        exponent = ''
+        exponent = last[0]
+        last = last[1:] # first one has to be part of exponent, after that '-' is not allowed anymore
         part2 = ''
         for i in range(len(last)):
-            if last[i] not in digits:
+            if (last[i] not in digits) and (not last[i].isalpha()):
                 part2 = last[i:]
                 break
             exponent = exponent+last[i]
-        formula = part0+str(math.pow(_rekcalc(base),_rekcalc(exponent)))+part2
+            print(exponent)
+        formula = part0+str(math.pow(_rekcalc(base, values),_rekcalc(exponent, values)))+part2
+        formula = str(_rekcalc(formula, values)) # resolve remaining
     # log:
     if formula.find(r'\log')>=0:
         part0 = formula[0:formula.find(r'\log')]
@@ -114,11 +168,12 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
         formula = part0+str(math.log(_rekcalc(part1)))+part2
+        formula = str(_rekcalc(formula, values)) # resolve remaining
     # trigonometry:
     if formula.find(r'\sin')>=0:
         part0 = formula[0:formula.find(r'\sin')]
@@ -126,7 +181,7 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
@@ -137,7 +192,7 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
@@ -148,7 +203,7 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
@@ -159,7 +214,7 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
@@ -170,7 +225,7 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
@@ -181,13 +236,14 @@ def _rekcalc(formula, values=''):
         part1 = ''
         part2 = ''
         for i in range(len(formula)):
-            if formula[i] not in digits:
+            if (formula[i] not in digits+'-') and (not formula[i].isalpha()):
                 part2 = formula[i:]
                 break
             part1 = part1+formula[i]
         formula = part0+str(math.atan(_rekcalc(part1)))+part2
+        formula = str(_rekcalc(formula, values)) # resolve remaining
     # arithmetic operations:
-    # since it's recursive start with addition/subtraction and reverse
+    # since it's recursive start with addition/subtraction
     if (formula.rpartition('+')[0] != '') and (formula.rpartition('+')[0][-1:] != 'e'): # e like '2e+12'
         a = formula.rpartition('+')[0]
         b = formula.rpartition('+')[2]
@@ -210,6 +266,11 @@ def _rekcalc(formula, values=''):
         # replace values:
         if formula in values:
             return values[formula]
+        # replace mathematical constants if not overridden in values:
+        elif formula == 'e':
+            return math.e
+        elif formula == '\pi' or formula == 'pi':
+            return math.pi
         else:
             try:
                 return int(formula)

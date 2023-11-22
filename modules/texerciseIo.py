@@ -12,7 +12,12 @@ data-types:
 '''
 
 import random, ast, json
-from modules import texCalc
+from math import floor, log10
+from modules import latexcalc
+
+def roundSigFig(val):
+    ''' round a float to certain significant figures '''
+    return round(val, -int(floor(log10(abs(val)/10000))))
 
 def getValues(inp):
     ''' generates values for the input '''
@@ -21,7 +26,10 @@ def getValues(inp):
         repl = inp.partition('[[')[2].partition(']]')[0] ## stuff to be replaced
         inp = inp.partition(']]')[2]
         repl = repl.split(',')
-        if repl[0] == 'n':
+        if repl[0] == 'f':
+            if len(repl)==3: repl.append(1)
+            values[str(repl[1])] = roundSigFig(random.uniform(float(repl[2]), float(repl[3])))
+        elif repl[0] == 'n':
             if len(repl)==4: repl.append(1)
             values[str(repl[1])] = random.randrange(int(repl[2]), int(repl[3]), int(repl[4]))
         if inp == '': break
@@ -53,12 +61,14 @@ def revise(sheet, edit):
                 tasks[task[1]]['result'] = True
             else:
                 tasks[task[1]]['result'] = False
+        elif task[0] == 'f':
+            pass
         elif task[0] == 'n':
             pass
         elif task[0] == 's':
             tasks[task[1]] = {'type': 's'}
             try:
-                tasks[task[1]]['result'] = texCalc.calc(task[2], values)
+                tasks[task[1]]['result'] = latexcalc.calc(task[2], values)
             except:
                 tasks[task[1]]['result'] = None
             values[task[1]] = tasks[task[1]]['result']
@@ -116,6 +126,8 @@ def convert(inp, values):
             pass
         elif repl[0] == 'b':
             out += '<input type="checkbox" id="'+str(repl[1])+'" name="'+str(repl[1])+'" class="formdata" />'
+        elif repl[0] == 'f':
+            out += str(values[str(repl[1])])
         elif repl[0] == 'n':
             out += str(values[str(repl[1])])
         elif repl[0] == 's':
