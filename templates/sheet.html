@@ -131,6 +131,9 @@ function qrcodeScriptLoaded() {
                     if (rev[key]) {
                         elem.style.color = 'green';
                         elem.style.accentColor = 'green';
+                    } else if (rev[key] == null) {
+                        elem.style.color = 'yellow';
+                        elem.style.accentColor = 'yellow';
                     } else if (!(rev[key])) {
                         elem.style.color = 'red';
                         elem.style.accentColor = 'red';

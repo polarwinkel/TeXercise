@@ -98,7 +98,7 @@ def revise(sheet, edit):
                     content[name] = None
             try:
                 res = float(tasks[name]['result'])
-                if res == None:
+                if res == None or res == '':
                     result[name] = None
                 elif (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
                     # TODO: option for tolerance-percentage

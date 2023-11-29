@@ -213,7 +213,7 @@ def results(sheet):
             for v in revision.values():
                 if v:
                     right += 1
-                else:
+                elif v == False:
                     wrong += 1
         else:
             right = '-'
