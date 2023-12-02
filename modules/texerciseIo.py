@@ -48,36 +48,39 @@ def revise(sheet, edit):
             values[vk] = float(values[vk])
     content = json.loads(edit['content'])
     rest = sheet['content']
-    while True:
+    while rest != '':
         # parse/calculate tasks-dict with results from sheet and values
-        task = rest.partition('[[')[2].partition(']]')[0] ## stuff to be replaced
-        rest = rest.partition(']]')[2]
+        task = rest.partition('[[')[2].partition(']]')[0] # stuff to be replaced in next task
+        rest = rest.partition(']]')[2] # will search for the next task in next iteration
         task = task.split(',')
         if task[0] == '':
             pass
-        elif task[0] == 'b':
+        elif task[0] == 'b': # binary-task
             tasks[task[1]] = {'type': 'b'}
             if task[2] =='true' or task[2]=='1':
                 tasks[task[1]]['result'] = True
             else:
                 tasks[task[1]]['result'] = False
-        elif task[0] == 'f':
+        elif task[0] == 'f': # float, not a task
             pass
-        elif task[0] == 'n':
+        elif task[0] == 'n': # number, not a task
             pass
-        elif task[0] == 's':
+        elif task[0] == 's': # solution for calculate-task
             tasks[task[1]] = {'type': 's'}
             try:
                 tasks[task[1]]['result'] = latexcalc.calc(task[2], values)
             except:
                 tasks[task[1]]['result'] = None
             values[task[1]] = tasks[task[1]]['result']
-        elif task[0] == 't':
+        elif task[0] == 't': # text-task
             tasks[task[1]] = {'type': 't'}
             tasks[task[1]]['result'] = task[2].lower()
+        elif task[0] == 'v': # (calculated) value, not a task
+            # TODO: give calculated values a name and add to values?
+            #       Or make it a different type to peserve "just show"?
+            pass
         else:
             raise ValueError('[ERROR: type not implemented for <code>'+str(task)+'</code>]')
-        if rest == '': break
     for name in tasks.keys():
         # revise: compare tasks with edit-content
         if tasks[name]['type'] == 'b':
@@ -134,6 +137,12 @@ def convert(inp, values):
             out += '<input type="text" id="'+str(repl[1])+'" name="'+str(repl[1])+'" class="formdata" />'
         elif repl[0] == 't':
             out += '<input type="text" id="'+str(repl[1])+'" name="'+str(repl[1])+'" class="formdata" />'
+        elif repl[0] == 'v':
+            try:
+                cvalue = latexcalc.calc(repl[1], values)
+            except:
+                cvalue = None
+            out += str(cvalue)
         else: out += '[ERROR: type not implemented for <code>'+str(repl)+'</code>]'
         if inp == '': break
     return out
