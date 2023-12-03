@@ -151,7 +151,7 @@ def putEditName():
         values = json.loads(edit['values'])
         eid = edit['id']
         result['content'] = edit['content']
-    mdhtml = mdtex2html.convert(sheet['content'])
+    mdhtml = mdtex2html.convert(sheet['content'], extensions)
     result['sheetcontent'] = texerciseIo.convert(mdhtml, values)
     result['eid'] = eid
     # TODO: return results if already edited?
