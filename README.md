@@ -18,7 +18,7 @@ It is strongly advised to use encryption to access the TeXercise-Server to prote
 
 ### Dependencies
 
-All dependencies can be installes on a debian-besed system with `apt install`
+All dependencies can be installed on a debian-besed system with `apt install`, on other systems with pip:
 
 - `python3`
 - `python-flask`
@@ -26,6 +26,7 @@ All dependencies can be installes on a debian-besed system with `apt install`
 - `python3-yaml`
 - `python3-markdown`
 - `python3-flask-login`
+- `python3-unidecode`
 
 ## TODO
 

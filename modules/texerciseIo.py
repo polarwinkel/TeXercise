@@ -46,7 +46,10 @@ def revise(sheet, edit):
             values[vk] = int(values[vk])
         except ValueError:
             values[vk] = float(values[vk])
-    content = json.loads(edit['content'])
+    if edit['content']:
+        content = json.loads(edit['content'])
+    else:
+        content = None
     rest = sheet['content']
     while rest != '':
         # parse/calculate tasks-dict with results from sheet and values
@@ -92,13 +95,14 @@ def revise(sheet, edit):
                 if content[name] in ['false', 'off', 'False', False, 0, '0']:
                     result[name] = True
         elif tasks[name]['type'] == 's':
-            try:
-                content[name] = int(content[name])
-            except ValueError:
+            if content:
                 try:
-                    content[name] = float(str(content[name]).replace(',', '.'))
-                except:
-                    content[name] = None
+                    content[name] = int(content[name])
+                except ValueError:
+                    try:
+                        content[name] = float(str(content[name]).replace(',', '.'))
+                    except:
+                        content[name] = None
             try:
                 res = float(tasks[name]['result'])
                 if res == None or res == '':

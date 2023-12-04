@@ -14,7 +14,7 @@ from jinja2 import Template
 from multiprocessing import Process
 import mdtex2html
 
-from modules import dbio, texerciseIo, settingsIo
+from modules import dbio, texerciseIo, settingsIo, normalizeString
 
 # global settings:
 
@@ -131,18 +131,19 @@ def editSheet(sheetn):
 @app.route('/_putSheet/<sheetn>', methods=['PUT'])
 @flask_login.login_required
 def putSheet(sheetn):
-    #sheet = json.load(request.json)
+    '''save a new or edited sheet'''
     db = dbio.TtDb(dbfile)
     result = db.putSheet(request.json)
     return str(result)
 
 @app.route('/_putEditName/', methods=['PUT'])
 def putEditName():
+    '''set name for a sheet, creating a new entry if not set before for the sheet, and return the sheet as json'''
     db = dbio.TtDb(dbfile)
     result = {}
     sheetn = request.json['sheetn']
     sheet = db.getSheet(sheetn)
-    name = request.json['name']
+    name = normalizeString.normalize(request.json['name'])
     edit = db.getEditName(sheetn, name)
     if not edit:
         values = texerciseIo.getValues(sheet['content'])
@@ -182,12 +183,14 @@ def sheetUser(path):
 
 @app.route('/_postEdit/<eid>', methods=['POST'])
 def postEdit(eid):
+    '''post an individual edit for a sheet'''
     db = dbio.TtDb(dbfile)
     result = db.postEdit(eid, json.dumps(request.json))
     return str(result)
 
 @app.route('/_getRevision/', methods=['PUT'])
 def getRevision():
+    '''just get the revision without posting a new edit'''
     db = dbio.TtDb(dbfile)
     req = request.json
     sheet = db.getSheet(req['sheetn'])

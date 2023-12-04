@@ -7,6 +7,7 @@ import sqlite3, json
 import os
 from modules import dbInit
 from datetime import datetime
+from modules import normalizeString
 
 class TtDb:
     ''' Database-Connection to the TeXercise-Database '''
@@ -129,25 +130,26 @@ class TtDb:
         cursor = self._connection.cursor()
         sqlTemplate = '''SELECT id FROM sheets WHERE name=?'''
         cursor.execute(sqlTemplate, (sheet['name'], ))
+        sheetName = normalizeString.normalize(sheet['name'])
         if sheet['sid'] != '':
-            #if cursor.fetchone()[0] != sheet['sid']:
-            #    return 'ERROR: Name exists already. Choose a different one!'
+            # update sheet:
             sqlTemplate = '''UPDATE sheets
                     SET name=?, forceLogin=?, allowEdit=?, content=? 
                     WHERE id=?;'''
-            valuelist = (sheet['name'],
+            valuelist = (sheetName,
                         sheet['forceLogin'],
                         sheet['allowEdit'],
                         sheet['content'],
                         sheet['sid']
                     )
         else:
+            # new sheet:
             if cursor.fetchone():
                 return 'ERROR: Name exists already. Choose a different one!'
             sqlTemplate = '''INSERT INTO sheets 
                     (name, forceLogin, allowEdit, content) 
                     VALUES (?, ?, ?, ?);'''
-            valuelist = (sheet['name'],
+            valuelist = (normalizeString.normalize(sheetName),
                         sheet['forceLogin'],
                         sheet['allowEdit'],
                         sheet['content']
@@ -158,9 +160,9 @@ class TtDb:
             args = list(err.args)
             return 'FAILED: SQL-Error: '+str(args)
         self._connection.commit()
-        sid = self.getSheetId(sheet['name'])
+        sid = self.getSheetId(sheetName)
         if sid >= 0:
-            return 'Success: Created as <a href="../_editSheet/'+sheet['name']+'">'+sheet['name']+'</a>!'
+            return 'Success: Created as <a href="../_editSheet/'+sheetName+'">'+sheetName+'</a>!'
         else:
             return 'ERROR 500: Unknown server error after entering into database'
     
