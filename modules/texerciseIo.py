@@ -6,9 +6,11 @@ syntax:
 
 data-types:
 - b: boolean        correct_value
+- f: float          correct_value
 - n: random number  min, max, step
 - s: solution       formula
 - t: text           correct_value
+- v: value          formula
 '''
 
 import random, ast, json

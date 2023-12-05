@@ -20,6 +20,28 @@
 <script src="{{ relroot }}_static/polalert.js"></script>
 <script>
     var relroot = '{{ relroot }}';
+    
+    function paOk(delpath) {
+        submit(delpath);
+    }
+    function paNo(delpath) {
+    }
+    async function submit(delpath) {
+        // send request to server
+        var deleteUrl = relroot+'_deleteSheet/'+delpath;
+        try{
+            const response = await fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                },
+            });
+            response.text().then(function (text) {
+                location.reload();
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
 </script>
 
 {% endblock %}

@@ -222,7 +222,27 @@ class TtDb:
                         'submitted' : t[2],
                         'values'    : t[3],
                         'content'   : t[4],
-                        'submits'    : t[5],
+                        'submits'   : t[5],
                         'timestamp' : t[6]
                     })
         return result
+    
+    def deleteEdits(self, sid, eid):
+        '''deletes a single edit or all edits for a sheet'''
+        cursor = self._connection.cursor()
+        if eid == '_all*':
+            sqlTemplate = '''DELETE FROM edits WHERE sid=?'''
+            cursor.execute(sqlTemplate, (sid, ))
+        else:
+            sqlTemplate = '''DELETE FROM edits WHERE sid=? AND id=?'''
+            cursor.execute(sqlTemplate, (sid, eid))
+        self._connection.commit()
+    
+    def deleteSheet(self, sid):
+        '''deletes a sheet with all edits'''
+        cursor = self._connection.cursor()
+        self.deleteEdits(sid, '_all*')
+        sqlTemplate = '''DELETE FROM sheets WHERE id=?'''
+        cursor.execute(sqlTemplate, (sid, ))
+        self._connection.commit()
+    

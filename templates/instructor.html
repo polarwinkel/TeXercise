@@ -27,17 +27,40 @@
     var relroot = '{{ relroot }}';
     var sheetList = JSON.parse('{{ sheetList|tojson }}');
     var list = '<table>';
-    list += '<tr><th>Sheet Name</th><th></th><th></th><th>Timestamp</th></tr>'
+    list += '<tr><th>Sheet Name</th><th></th><th></th><th>Timestamp</th><th>delete</th></tr>'
     for (var i=0; i<sheetList.length; i++) {
         list += '<tr>';
         list += '<td><a href="{{ relroot }}'+sheetList[i].name+'">'+sheetList[i].name+'</td>';
         list += '<td><a href="{{ relroot }}_editSheet/'+sheetList[i].name+'">edit</a></td>';
         list += '<td><a href="{{ relroot }}_results/'+sheetList[i].name+'">results</a></td>';
         list += '<td>'+sheetList[i].timestamp+'</td>';
+        list += '<td><a onclick="pa.boolean(\'Really delete '+sheetList[i].name+'? This is final!\', \''+sheetList[i].id+'\')">delete</a></td>';
         list += '</tr>';
     }
     list += '</table>';
     document.getElementById('sheetList').innerHTML = list;
+    
+    function paOk(sid) {
+        submit(sid);
+    }
+    function paNo(sid) {
+    }
+    async function submit(sid) {
+        // send request to server
+        var deleteUrl = relroot+'_deleteSheet/'+sid;
+        try{
+            const response = await fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                },
+            });
+            response.text().then(function (text) {
+                location.reload();
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
 </script>
 
 {% endblock %}

@@ -205,7 +205,7 @@ def results(sheet):
     db = dbio.TtDb(dbfile)
     sheet = db.getSheet(sheet)
     edits = db.getEdits(sheet['id'])
-    resultlist = '<table><tr><th>Name</th><th>right</th><th>wrong</th><th>submits</th><th>timestamp</th></tr>\n'
+    resultlist = '<table><tr><th>Name</th><th>right</th><th>wrong</th><th>submits</th><th>timestamp</th><th>delete</th></tr>\n'
     for edit in edits:
         values = json.loads(edit['values'])
         if edit['content'] is not None:
@@ -222,7 +222,11 @@ def results(sheet):
             right = '-'
             wrong = '-'
         resultlist += '<tr><td><a href="../'+sheet['name']+'/'+edit['name']+'">'+edit['name']+'</a></td>'
-        resultlist += '<td>'+str(right)+'</td><td>'+str(wrong)+'</td><td>'+str(edit['submits'])+'</td><td>'+str(edit['timestamp'])+'</td></tr>\n'
+        resultlist += '<td>'+str(right)+'</td>'
+        resultlist += '<td>'+str(wrong)+'</td>'
+        resultlist += '<td>'+str(edit['submits'])+'</td>'
+        resultlist += '<td>'+str(edit['timestamp'])+'</td>'
+        resultlist += '<td><a onclick="pa.boolean(\'Really delete this edit?\', \'../_deleteEdit/'+str(sheet['id'])+'/'+str(edit['id'])+'\')">delete</a></td></tr>\n'
     resultlist += '</table>\n'
     return render_template('results.html', relroot='../', sheet=sheet['name'], resultlist=resultlist)
 
@@ -233,6 +237,22 @@ def instructor():
     db = dbio.TtDb(dbfile)
     sheetList = db.getSheetList()
     return render_template('instructor.html', relroot='./', sheetList=sheetList, authuser=flask_login.current_user.id)
+
+@app.route('/_deleteEdit/<sid>/<eid>', methods=['DELETE'])
+@flask_login.login_required
+def deleteEdit(sid, eid):
+    '''delete an edit'''
+    db = dbio.TtDb(dbfile)
+    db.deleteEdits(sid, eid)
+    return 'ok'
+
+@app.route('/_deleteSheet/<sid>', methods=['DELETE'])
+@flask_login.login_required
+def deleteSheet(sid):
+    '''delete a sheet with all edits'''
+    db = dbio.TtDb(dbfile)
+    db.deleteSheet(sid)
+    return 'ok'
 
 # run it:
 
