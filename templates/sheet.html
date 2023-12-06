@@ -128,15 +128,25 @@ function qrcodeScriptLoaded() {
                 rev = JSON.parse(text);
                 for (var key in rev) {
                     elem = document.getElementById(key);
-                    if (rev[key]) {
+                    if (rev[key][0]) {
                         elem.style.color = 'green';
                         elem.style.accentColor = 'green';
-                    } else if (rev[key] == null) {
+                    } else if (rev[key][0] == null) {
                         elem.style.color = 'yellow';
                         elem.style.accentColor = 'yellow';
-                    } else if (!(rev[key])) {
+                    } else if (!(rev[key][0])) {
                         elem.style.color = 'red';
                         elem.style.accentColor = 'red';
+                    }
+                    console.log(rev[key]);
+                    if (elem.type == 'checkbox' && rev[key].length>1) {
+                        let lab = document.getElementById(key+'_fb');
+                        lab.innerHTML = rev[key][1];
+                        if (rev[key][0]) {
+                            lab.style.color = 'green';
+                        } else if (!(rev[key][0])) {
+                            lab.style.color = 'red';
+                        }
                     }
                 }
             });

@@ -214,9 +214,9 @@ def results(sheet):
             wrong = 0
             revision = texerciseIo.revise(sheet, edit)
             for v in revision.values():
-                if v:
+                if v[0]:
                     right += 1
-                elif v == False:
+                elif v[0] == False:
                     wrong += 1
         else:
             right = '-'

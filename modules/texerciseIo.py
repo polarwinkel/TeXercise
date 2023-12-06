@@ -5,7 +5,7 @@ syntax:
 [[type,name,        options]]
 
 data-types:
-- b: boolean        correct_value
+- b: boolean        correct_value[, wrong-text, right-text]
 - f: float          correct_value
 - n: random number  min, max, step
 - s: solution       formula
@@ -61,9 +61,18 @@ def revise(sheet, edit):
         if task[0] == '':
             pass
         elif task[0] == 'b': # binary-task
-            tasks[task[1]] = {'type': 'b'}
+            tname = task[1]
+            tasks[tname] = {'type': 'b'}
             if task[2] =='true' or task[2]=='1':
-                tasks[task[1]]['result'] = True
+                tasks[tname]['result'] = True
+                if len(task) > 3:
+                    tasks[tname]['FalseText'] = task[3]
+                else:
+                    tasks[tname]['FalseText'] = 'wrong'
+                if len(task) > 4:
+                    tasks[tname]['TrueText'] = task[4]
+                else:
+                    tasks[tname]['TrueText'] = 'right'
             else:
                 tasks[task[1]]['result'] = False
         elif task[0] == 'f': # float, not a task
@@ -89,13 +98,13 @@ def revise(sheet, edit):
     for name in tasks.keys():
         # revise: compare tasks with edit-content
         if tasks[name]['type'] == 'b':
-            result[name] = False
+            result[name] = [False, tasks[name]['FalseText']]
             if tasks[name]['result']:
                 if content[name] in ['true', 'on', 'True', True, 1, '1']:
-                    result[name] = True
+                    result[name] = [True, tasks[name]['TrueText']]
             elif not tasks[name]['result']:
                 if content[name] in ['false', 'off', 'False', False, 0, '0']:
-                    result[name] = True
+                    result[name] = [True, tasks[name]['TrueText']]
         elif tasks[name]['type'] == 's':
             if content:
                 try:
@@ -108,19 +117,19 @@ def revise(sheet, edit):
             try:
                 res = float(tasks[name]['result'])
                 if res == None or res == '':
-                    result[name] = None
+                    result[name] = [None]
                 elif (res * 0.95 <= content[name]) and (res * 1.05 >= content[name]):
                     # TODO: option for tolerance-percentage
-                    result[name] = True
+                    result[name] = [True]
                 else:
-                    result[name] = False
+                    result[name] = [False]
             except TypeError:
-                result[name] = None
+                result[name] = [None]
         elif tasks[name]['type'] == 't':
             if tasks[name]['result'] == content[name].lower():
-                result[name] = True
+                result[name] = [True]
             else:
-                result[name] = False
+                result[name] = [False]
     return result
 
 def convert(inp, values):
@@ -135,6 +144,7 @@ def convert(inp, values):
             pass
         elif repl[0] == 'b':
             out += '<input type="checkbox" id="'+str(repl[1])+'" name="'+str(repl[1])+'" class="formdata" />'
+            out += '<span id="'+str(repl[1])+'_fb"></span>'
         elif repl[0] == 'f':
             out += str(values[str(repl[1])])
         elif repl[0] == 'n':

@@ -28,8 +28,8 @@
 <p>Enter fields in two square brackets <code>[[field]]</code> with <code>,</code>-separated attributes.<br />
 The first attribute is the type, the second is the name, followed by the options (depending on type, see below).</p>
 <ul>
-    <li><code>b</code>: boolean, option is the answer-value <code>true</code> or <code>false</code>.<br />
-    Example: <code>[[b,name,true]]</code></li>
+    <li><code>b</code>: boolean, option is the answer-value <code>true</code> or <code>false</code>, optional wrong and right-message.<br />
+    Example: <code>[[b,name,true,that's wrong ;-(,you got it!]]</code></li>
     <li><code>f</code>: random float number with 5 significant figures, mandatory options are min, max.<br />
     Example: <code>[[f,x,2.7e-2,3.1e-2]]</code><br />
     <li><code>n</code>: random integer number, mandatory options are min, max, optional step (default: 1).<br />
