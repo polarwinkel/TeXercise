@@ -26,8 +26,8 @@ function showQr() {
     qrcodeScript.addEventListener("load", qrcodeScriptLoaded, false);
 }
 function qrcodeScriptLoaded() {
-    var
-    svgNode = QRCode({msg:window.location.href, dim:800,
+    let loc = window.location.href.replace('/'+name, '');
+    var svgNode = QRCode({msg:loc, dim:800,
             pad:6, mtx:7, ecl:"H", ecb:0, pal:["#000", "#eee"], vrb:1});
     document.getElementById('showQr').style.display = 'none';
     document.body.appendChild(svgNode);
