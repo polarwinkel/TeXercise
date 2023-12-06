@@ -65,16 +65,16 @@ def revise(sheet, edit):
             tasks[tname] = {'type': 'b'}
             if task[2] =='true' or task[2]=='1':
                 tasks[tname]['result'] = True
-                if len(task) > 3:
-                    tasks[tname]['FalseText'] = task[3]
-                else:
-                    tasks[tname]['FalseText'] = 'wrong'
-                if len(task) > 4:
-                    tasks[tname]['TrueText'] = task[4]
-                else:
-                    tasks[tname]['TrueText'] = 'right'
             else:
                 tasks[task[1]]['result'] = False
+            if len(task) > 3:
+                tasks[tname]['FalseText'] = task[3]
+            else:
+                tasks[tname]['FalseText'] = 'wrong'
+            if len(task) > 4:
+                tasks[tname]['TrueText'] = task[4]
+            else:
+                tasks[tname]['TrueText'] = 'right'
         elif task[0] == 'f': # float, not a task
             pass
         elif task[0] == 'n': # number, not a task
