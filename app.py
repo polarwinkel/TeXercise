@@ -140,7 +140,6 @@ def putSheet(sheetn):
 def putEditName():
     '''set name for a sheet, creating a new entry if not set before for the sheet, and return the sheet as json'''
     db = dbio.TtDb(dbfile)
-    result = {}
     sheetn = request.json['sheetn']
     sheet = db.getSheet(sheetn)
     name = normalizeString.normalize(request.json['name'])
@@ -148,15 +147,7 @@ def putEditName():
     if not edit:
         values = texerciseIo.getValues(sheet['content'])
         eid = db.createEditName(sheet, name, values)
-    else:
-        values = json.loads(edit['values'])
-        eid = edit['id']
-        result['content'] = edit['content']
-    mdhtml = mdtex2html.convert(sheet['content'], extensions)
-    result['sheetcontent'] = texerciseIo.convert(mdhtml, values)
-    result['eid'] = eid
-    # TODO: return results if already edited?
-    return jsonify(result)
+    return name
 
 @app.route('/<sheetn>', methods=['GET'])
 def sheet(sheetn):
@@ -180,6 +171,28 @@ def sheetUser(path):
     except Exception as e:
         return render_template('404.html'), 404
     return render_template('sheet.html', relroot='../', sheetn=sheet['name'], allowEdit=sheet['allowEdit'], name=name)
+@app.route('/_loadSheetUser/<path:path>', methods=['PUT'])
+def loadSheetUser(path):
+    '''load a sheet-json for sheet/user'''
+    db = dbio.TtDb(dbfile)
+    result = {}
+    sheetn = request.json['sheetn']
+    sheet = db.getSheet(sheetn)
+    name = request.json['name']
+    #name = normalizeString.normalize(request.json['name'])
+    edit = db.getEditName(sheetn, name)
+    if not edit:
+        values = texerciseIo.getValues(sheet['content'])
+        eid = db.createEditName(sheet, name, values)
+    else:
+        values = json.loads(edit['values'])
+        eid = edit['id']
+        result['content'] = edit['content']
+    mdhtml = mdtex2html.convert(sheet['content'], extensions)
+    result['sheetcontent'] = texerciseIo.convert(mdhtml, values)
+    result['eid'] = eid
+    return result
+    # TODO: return results if already edited?
 
 @app.route('/_postEdit/<eid>', methods=['POST'])
 def postEdit(eid):

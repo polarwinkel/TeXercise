@@ -71,11 +71,30 @@ function qrcodeScriptLoaded() {
         }
     }
     async function setName(name) {
-        // set the username and get the current edit
+        // set the username and forward to the individual sheet
         var data = JSON.stringify({'sheetn': sheetn, 'name': name});
         var putUrl = relroot+'_putEditName/';
         try{
             const response = await fetch(putUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            });
+            response.text().then(function (normname) {
+                window.location.href = relroot+sheetn+'/'+normname;
+            });
+        } catch(err) {
+            pa.error(err);
+        }
+    }
+    async function loadSheetUser() {
+        // load a individual sheet for a name
+        var data = JSON.stringify({'sheetn': sheetn, 'name': name});
+        var getUrl = relroot+'_loadSheetUser/'+sheetn+'/'+name;
+        try {
+            const response = await fetch(getUrl, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -88,23 +107,20 @@ function qrcodeScriptLoaded() {
                 eid = result.eid;
                 document.getElementById('_name').innerHTML = name;
                 document.getElementById('sheetcontent').innerHTML = result.sheetcontent;
-                try {
-                    var content = JSON.parse(result.content)
-                    for (var key in content) {
-                        var elem = document.getElementById(key);
-                        if (elem.type== 'text') {
-                            elem.value = content[key];
-                        } else if (elem.type=='checkbox') {
-                            if (content[key]=='on') elem.checked=true;
-                        }
+                var content = JSON.parse(result.content)
+                for (var key in content) {
+                    var elem = document.getElementById(key);
+                    if (elem.type== 'text') {
+                        elem.value = content[key];
+                    } else if (elem.type=='checkbox') {
+                        if (content[key]=='on') elem.checked=true;
                     }
-                    checkSubmitted();
-                } catch { }
+                }
+                checkSubmitted();
             });
-        } catch(err) {
-            pa.error(err);
-        }
+        } catch(e) {pa.error('ERROR loading sheet for user:<br>'+e)}
     }
+    
     function paInputReceive(inputtext) {
         if (inputtext != false) {
             setName(inputtext);
@@ -158,7 +174,7 @@ function qrcodeScriptLoaded() {
     if (name === '') {
         pa.input('Name:');
     } else {
-        setName(name);
+        loadSheetUser();
     }
 </script>
 

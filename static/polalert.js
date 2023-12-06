@@ -1,4 +1,4 @@
-const version = 'v1.0.0';
+const version = 'v1.1.0';
 class Polalert {
     constructor() {
         this.bgBox = document.createElement('div');
@@ -16,46 +16,47 @@ class Polalert {
         this.box.parent = this.bgBox;
         this.box.setAttribute('id', 'polalert');
         this.box.style.display = 'block';
-        this.box.style.minHeight = '200px';
+        this.box.style.minHeight = '12em';
         this.box.style.width = '50%';
-        this.box.style.minWidth = '300px';
+        this.box.style.minWidth = '18em';
         this.box.style.maxWidth = '100%';
-        this.box.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
-        this.box.style.backdropFilter = 'blur(5px)';
-        this.box.style.boxShadow = '10px 10px 5px rgba(0,0,0,0.5)';
-        this.box.style.borderRadius = '10px';
+        this.box.style.backdropFilter = 'blur(0.3em)';
+        this.box.style.boxShadow = '0.6em 0.6em 0.3em rgba(0,0,0,0.5)';
+        this.box.style.borderRadius = '0.6em';
         if (window.innerWidth > 981) {
             this.box.style.marginLeft = '25%';
         } else {
-            this.box.style.width = '100%';
+            this.box.style.width = '80%';
+            this.box.style.marginLeft = '5%';
         }
-        this.box.style.marginTop = '100px';
-        this.box.style.padding = '20px';
+        this.box.style.marginTop = '6em';
+        this.box.style.padding = '1.2em';
         this.box.style.textAlign = 'center';
-        this.box.style.fontSize = '1.6rem';
+        this.box.style.fontSize = '1.2em';
         this.bgBox.appendChild(this.box);
         this.buttonOk = document.createElement('button');
         this.buttonOk.parent = this.box;
         this.buttonOk.setAttribute('id', 'polalertOk');
-        this.buttonOk.style.width = '200px';
+        this.buttonOk.style.width = '12em';
         this.buttonOk.style.backgroundColor = 'rgba(0, 255, 0, 0.7)';
-        this.buttonOk.style.border = '5px solid silver';
-        this.buttonOk.style.borderRadius = '10px';
-        this.buttonOk.style.fontSize = '2rem';
+        this.buttonOk.style.border = '0.1em solid gray';
+        this.buttonOk.style.borderRadius = '0.6em';
+        this.buttonOk.style.fontSize = '1.4em';
         this.buttonOk.innerHTML = '<p>&#10003;</p>';
         this.buttonNo = document.createElement('button');
         this.buttonNo.parent = this.box;
         this.buttonNo.setAttribute('id', 'polalertNo');
-        this.buttonNo.style.width = '200px';
+        this.buttonNo.style.width = '12em';
         this.buttonNo.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
-        this.buttonNo.style.border = '5px solid silver';
-        this.buttonNo.style.borderRadius = '10px';
-        this.buttonNo.style.fontSize = '2rem';
+        this.buttonNo.style.border = '0.1em solid gray';
+        this.buttonNo.style.borderRadius = '0.6em';
+        this.buttonNo.style.fontSize = '1.4em';
         this.buttonNo.innerHTML = '<p>&#10005;</p>';
     }
     next() {
     }
     hello() {
+        this.box.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
         this.box.innerHTML = '<p>Hello World!</p>';
         this.box.appendChild(this.buttonOk);
         document.body.appendChild(this.bgBox);
@@ -67,7 +68,7 @@ class Polalert {
     }
     message(msg) {
         this.box.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-        this.box.style.backdropFilter = 'blur(5px)';
+        this.box.style.backdropFilter = 'blur(0.3em)';
         this.box.innerHTML = '<p>'+msg+'</p>';
         this.box.appendChild(this.buttonOk);
         document.body.appendChild(this.bgBox);
@@ -79,7 +80,7 @@ class Polalert {
     }
     warning(warn) {
         this.box.style.backgroundColor = 'rgba(255, 180, 0, 0.7)';
-        this.box.style.backdropFilter = 'blur(5px)';
+        this.box.style.backdropFilter = 'blur(0.3em)';
         this.box.innerHTML = '<p>'+warn+'</p>';
         this.box.appendChild(this.buttonOk);
         document.body.appendChild(this.bgBox);
@@ -91,7 +92,7 @@ class Polalert {
     }
     error(err) {
         this.box.style.backgroundColor = 'rgba(255, 50, 50, 0.7)';
-        this.box.style.backdropFilter = 'blur(5px)';
+        this.box.style.backdropFilter = 'blur(0.3em)';
         this.box.innerHTML = '<p>'+err+'</p>';
         this.box.appendChild(this.buttonOk);
         document.body.appendChild(this.bgBox);
@@ -102,15 +103,18 @@ class Polalert {
         this.bgBox.style.display = 'block';
     }
     boolean(msg, str='') {
+        this.box.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
         this.answer = null;
         this.box.innerHTML = '<p>'+msg+'</p>';
         this.box.appendChild(this.buttonNo);
+        this.buttonNo.style.margin = '0.3em';
         this.buttonNo.onclick = function () {
             var bg = document.getElementById('polalertBg');
             document.body.removeChild(bg);
             paNo(str);
         };
         this.box.appendChild(this.buttonOk);
+        this.buttonOk.style.margin = '0.3em';
         this.buttonOk.onclick = function () {
             var bg = document.getElementById('polalertBg');
             document.body.removeChild(bg);
@@ -121,17 +125,20 @@ class Polalert {
         return[this.buttonOk, this.buttonNo];
     }
     input(msg, password=false) {
+        this.box.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
         this.answer = null;
         this.box.innerHTML = '<p>'+msg+'</p>';
         if (password) this.box.innerHTML += '<input type="password" id="paInput" style="max-width:100%"></input><br />'
         else this.box.innerHTML += '<input type="text" id="paInput" style="max-width:100%"></input><br />';
         this.box.appendChild(this.buttonNo);
+        this.buttonNo.style.margin = '0.3em';
         this.buttonNo.onclick = function () {
             var bg = document.getElementById('polalertBg');
             document.body.removeChild(bg);
             paInputReceive(false);
         };
         this.box.appendChild(this.buttonOk);
+        this.buttonOk.style.margin = '0.3em';
         this.buttonOk.onclick = function () {
             var inputtext = document.getElementById('paInput').value
             var bg = document.getElementById('polalertBg');
