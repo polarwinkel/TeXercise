@@ -109,7 +109,7 @@ class TtDb:
             self._connection.commit()
             return eid;
         else:
-            raise ValueError('ERRPR: edit exists for that user and sheet!')
+            raise ValueError('ERROR: edit exists for that user and sheet!')
     
     def postEdit(self, eid, edit):
         ''' writes a submitted edit to the database, incementing counter '''

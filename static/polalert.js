@@ -1,4 +1,4 @@
-const version = 'v1.1.0';
+const version = 'v1.2.0';
 class Polalert {
     constructor() {
         this.bgBox = document.createElement('div');
@@ -65,6 +65,7 @@ class Polalert {
             document.body.removeChild(bg);
         };
         this.bgBox.style.display = 'block';
+        document.getElementById('polalertOk').focus();
     }
     message(msg) {
         this.box.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
@@ -77,6 +78,7 @@ class Polalert {
             document.body.removeChild(bg);
         };
         this.bgBox.style.display = 'block';
+        document.getElementById('polalertOk').focus();
     }
     warning(warn) {
         this.box.style.backgroundColor = 'rgba(255, 180, 0, 0.7)';
@@ -89,6 +91,7 @@ class Polalert {
             document.body.removeChild(bg);
         };
         this.bgBox.style.display = 'block';
+        document.getElementById('polalertOk').focus();
     }
     error(err) {
         this.box.style.backgroundColor = 'rgba(255, 50, 50, 0.7)';
@@ -101,18 +104,12 @@ class Polalert {
             document.body.removeChild(bg);
         };
         this.bgBox.style.display = 'block';
+        document.getElementById('polalertOk').focus();
     }
     boolean(msg, str='') {
         this.box.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
         this.answer = null;
         this.box.innerHTML = '<p>'+msg+'</p>';
-        this.box.appendChild(this.buttonNo);
-        this.buttonNo.style.margin = '0.3em';
-        this.buttonNo.onclick = function () {
-            var bg = document.getElementById('polalertBg');
-            document.body.removeChild(bg);
-            paNo(str);
-        };
         this.box.appendChild(this.buttonOk);
         this.buttonOk.style.margin = '0.3em';
         this.buttonOk.onclick = function () {
@@ -120,8 +117,16 @@ class Polalert {
             document.body.removeChild(bg);
             paOk(str);
         };
+        this.box.appendChild(this.buttonNo);
+        this.buttonNo.style.margin = '0.3em';
+        this.buttonNo.onclick = function () {
+            var bg = document.getElementById('polalertBg');
+            document.body.removeChild(bg);
+            paNo(str);
+        };
         document.body.appendChild(this.bgBox);
         this.bgBox.style.display = 'block';
+        document.getElementById('polalertNo').focus();
         return[this.buttonOk, this.buttonNo];
     }
     input(msg, password=false) {
@@ -130,13 +135,6 @@ class Polalert {
         this.box.innerHTML = '<p>'+msg+'</p>';
         if (password) this.box.innerHTML += '<input type="password" id="paInput" style="max-width:100%"></input><br />'
         else this.box.innerHTML += '<input type="text" id="paInput" style="max-width:100%"></input><br />';
-        this.box.appendChild(this.buttonNo);
-        this.buttonNo.style.margin = '0.3em';
-        this.buttonNo.onclick = function () {
-            var bg = document.getElementById('polalertBg');
-            document.body.removeChild(bg);
-            paInputReceive(false);
-        };
         this.box.appendChild(this.buttonOk);
         this.buttonOk.style.margin = '0.3em';
         this.buttonOk.onclick = function () {
@@ -145,8 +143,16 @@ class Polalert {
             document.body.removeChild(bg);
             paInputReceive(inputtext);
         };
+        this.box.appendChild(this.buttonNo);
+        this.buttonNo.style.margin = '0.3em';
+        this.buttonNo.onclick = function () {
+            var bg = document.getElementById('polalertBg');
+            document.body.removeChild(bg);
+            paInputReceive(false);
+        };
         document.body.appendChild(this.bgBox);
         this.bgBox.style.display = 'block';
+        document.getElementById('paInput').focus();
         return[this.buttonOk, this.buttonNo];
     }
 }
