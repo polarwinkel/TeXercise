@@ -33,7 +33,10 @@ def getValues(inp):
             values[str(repl[1])] = roundSigFig(random.uniform(float(repl[2]), float(repl[3])))
         elif repl[0] == 'n':
             if len(repl)==4: repl.append(1)
-            values[str(repl[1])] = random.randrange(int(repl[2]), int(repl[3]), int(repl[4]))
+            try:
+                values[str(repl[1])] = random.randrange(int(repl[2]), int(repl[3]), int(repl[4]))
+            except ValueError:
+                values[str(repl[1])] = random.randrange(float(repl[2]), float(repl[3]), float(repl[4]))
         if inp == '': break
     return values
 
